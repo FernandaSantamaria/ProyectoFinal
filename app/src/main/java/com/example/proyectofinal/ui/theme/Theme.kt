@@ -30,7 +30,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun InstagramTheme(
+fun ProyectoFinalTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
