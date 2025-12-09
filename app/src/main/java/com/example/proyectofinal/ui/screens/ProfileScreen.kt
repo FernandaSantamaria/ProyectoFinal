@@ -1,255 +1,203 @@
 package com.example.proyectofinal.ui.screens
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.example.proyectofinal.data.model.Post
-import com.example.proyectofinal.data.model.User
-import com.example.proyectofinal.ui.viewmodel.ProfileViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    userId: Int,
-    onBackClick: () -> Unit,
-    onPostClick: (Int) -> Unit,
-    viewModel: ProfileViewModel = viewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(userId) {
-        viewModel.loadProfile(userId)
-    }
-
+fun ProfileScreen() {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = uiState.user?.username ?: "",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.MoreVert, "Menu")
-                    }
-                }
-            )
-        }
+        bottomBar = { BottomNavBar(selectedIndex = 3) }
     ) { padding ->
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            uiState.error != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                ) {
-                    // Profile Header
-                    item {
-                        uiState.user?.let { user ->
-                            ProfileHeader(user)
-                        }
-                    }
-
-                    // Bio
-                    item {
-                        uiState.user?.let { user ->
-                            if (user.name.isNotEmpty()) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                ) {
-                                    Text(
-                                        text = user.name,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Edit Profile Button
-                    item {
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFEFEFEF),
-                                contentColor = Color.Black
-                            )
-                        ) {
-                            Text("Edit Profile")
-                        }
-                    }
-
-                    // Divider
-                    item {
-                        Divider(
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            thickness = 1.dp
-                        )
-                    }
-
-                    // Posts Grid
-                    item {
-                        PostsGrid(
-                            posts = uiState.posts,
-                            onPostClick = onPostClick
-                        )
-                    }
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color(0xFFF5F5F5))
+        ) {
+            TopBar()
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item { ProfileHeader() }
+                item { StatsRow() }
+                item { ActionButtons() }
+                item { TabSection() }
+                item { PhotoGrid() }
             }
         }
     }
 }
 
 @Composable
-fun ProfileHeader(user: User) {
+fun TopBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Profile Picture
-        AsyncImage(
-            model = user.avatar ?: "https://i.pravatar.cc/300?img=${user.id}",
-            contentDescription = "Profile picture",
+        Icon(Icons.Default.ArrowBack, contentDescription = null)
+        Icon(Icons.Default.MoreVert, contentDescription = null)
+    }
+}
+
+@Composable
+fun ProfileHeader() {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
             modifier = Modifier
-                .size(90.dp)
+                .size(80.dp)
                 .clip(CircleShape)
-                .border(1.dp, Color.LightGray, CircleShape),
-            contentScale = ContentScale.Crop
+                .background(Color.Gray)
         )
-
-        // Stats
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 24.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Spacer(modifier = Modifier.height(12.dp).width(12.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
         ) {
-            ProfileStat(count = user.postsCount, label = "Posts")
-            ProfileStat(count = user.followersCount, label = "Followers")
-            ProfileStat(count = user.followingCount, label = "Following")
+            Text("Anna Adams", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("@anna.adams09", fontSize = 14.sp, color = Color.Gray)
+            Text("San Jose, CA", fontSize = 14.sp, color = Color.Gray)
         }
     }
 }
 
 @Composable
-fun ProfileStat(count: Int, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = formatCount(count),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-    }
-}
-
-@Composable
-fun PostsGrid(
-    posts: List<Post>,
-    onPostClick: (Int) -> Unit
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = Modifier.height((posts.size / 3 + 1) * 130.dp),
-        userScrollEnabled = false
+fun StatsRow() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        items(posts) { post ->
-            Box(
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .padding(1.dp)
-                    .clickable { onPostClick(post.id) }
-            ) {
-                if (!post.imageUrl.isNullOrEmpty()) {
-                    AsyncImage(
-                        model = post.imageUrl,
-                        contentDescription = "Post",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.Image,
-                            contentDescription = "No image",
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            }
+        StatItem("24K", "Fans")
+        StatItem("582", "Following")
+        StatItem("2129", "Posts")
+        StatItem("91", "Goodies")
+    }
+}
+
+@Composable
+fun StatItem(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(label, fontSize = 12.sp, color = Color.Gray)
+    }
+}
+
+@Composable
+fun ActionButtons() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Button(
+            onClick = {},
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
+        ) {
+            Text("Follow")
+        }
+        Button(
+            onClick = {},
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF64B5F6))
+        ) {
+            Text("Message")
         }
     }
 }
 
-fun formatCount(count: Int): String {
-    return when {
-        count >= 1_000_000 -> "${count / 1_000_000}M"
-        count >= 1_000 -> "${count / 1_000}K"
-        else -> count.toString()
+@Composable
+fun TabSection() {
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("Photo", "Video", "About", "Favorite")
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        tabs.forEachIndexed { index, tab ->
+            Text(
+                text = tab,
+                modifier = Modifier.clickable { selectedTab = index },
+                color = if (selectedTab == index) Color(0xFF6C63FF) else Color.Gray,
+                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal
+            )
+        }
     }
 }
+
+@Composable
+fun PhotoGrid() {
+    val gridItems = listOf(
+        GridSize.Large, GridSize.Small,
+        GridSize.Small, GridSize.Large
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            PhotoGridItem(modifier = Modifier.weight(1f).height(250.dp))
+            PhotoGridItem(modifier = Modifier.weight(1f).height(250.dp))
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            PhotoGridItem(modifier = Modifier.weight(1f).height(200.dp))
+            PhotoGridItem(modifier = Modifier.weight(1f).height(200.dp))
+        }
+    }
+}
+
+@Composable
+fun PhotoGridItem(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.LightGray)
+    )
+}
+
+enum class GridSize { Small, Large }
