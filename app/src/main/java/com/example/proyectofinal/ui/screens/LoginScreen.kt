@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -73,14 +74,22 @@ fun LoginScreen(
     }
 
 
-    fun handleLogin(isLoggedIn: Boolean, message: String) {
-        if (isLoggedIn) {
-            navController.navigate(HomeScreenRoute) {
-                popUpTo(HomeScreenRoute)
+    fun handleLogin() {
+        if (username.isBlank() || password.isBlank()) return
+
+        viewModel.login(
+            username,
+            password
+        ) { isLoggedIn, message ->
+
+            if (isLoggedIn) {
+                navController.navigate(HomeScreenRoute) {
+                    popUpTo(LoginScreenRoute) { inclusive = true }
+                }
+            } else {
+                Toast.makeText(context, message, Toast.LENGTH_LONG)
+                    .show()
             }
-        } else {
-            Toast.makeText(context, message, Toast.LENGTH_LONG)
-                .show()
         }
     }
 
@@ -154,29 +163,24 @@ fun LoginScreen(
                 ),
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus(force = true)
-
-                    viewModel.login(
-                        username,
-                        password
-                    ) { isLoggedIn, message ->
-                        handleLogin(isLoggedIn, message)
-                    }
+                    handleLogin()
                 },
                 singleLine = true,
                 shape = CircleShape
             )
 
             Button(
-                onClick = {
-                    viewModel.login(
-                        username,
-                        password
-                    ) { isLoggedIn, message ->
-                        handleLogin(isLoggedIn, message)
-                    }
-                },
+                onClick = { handleLogin() },
             ) {
                 Text("Iniciar sesión")
+            }
+
+            TextButton(
+                onClick = {
+                    navController.navigate(RegisterScreenRoute)
+                }
+            ) {
+                Text("Crear cuenta")
             }
         }
 

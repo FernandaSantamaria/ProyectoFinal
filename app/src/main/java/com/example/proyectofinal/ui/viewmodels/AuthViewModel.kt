@@ -25,6 +25,8 @@ class AuthViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
+                isLoading = true
+
                 val service = RetrofitClient.createAuthService()
 
                 val registerBody = Register(
@@ -42,13 +44,35 @@ class AuthViewModel : ViewModel() {
                     onResult(true, "Registro exitoso")
                     println(result.toString())
                 } else {
-                    onResult(false, "Error al registrar")
-                    println("No registrado")
-                    println(result.toString())
+                    onResult(false, "Credenciales incorrectas")
                 }
             } catch (e: HttpException) {
-                onResult(false, "Error al registrar")
-                println(e.toString())
+                Log.e("AuthViewModel", e.toString())
+
+                if (e is HttpException) {
+                    when (e.code()) {
+                        400 -> {
+                            onResult(
+                                false,
+                                "Ya existe un usuario con este nombre."
+                            )
+                        }
+
+                        else -> {
+                            onResult(
+                                false,
+                                "Algo salió mal. Intenta de nuevo más tarde."
+                            )
+                        }
+                    }
+                } else {
+                    onResult(
+                        false,
+                        "Algo salió mal. Intenta de nuevo más tarde."
+                    )
+                }
+            } finally {
+                isLoading = false
             }
         }
     }
@@ -79,7 +103,7 @@ class AuthViewModel : ViewModel() {
                     onResult(false, "Credenciales incorrectas")
                 }
             } catch (e: Exception) {
-                Log.e("LoginScreen", e.toString())
+                Log.e("AuthViewModel", e.toString())
 
                 if (e is HttpException) {
                     when (e.code()) {
