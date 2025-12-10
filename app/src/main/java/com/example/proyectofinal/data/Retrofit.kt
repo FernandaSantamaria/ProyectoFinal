@@ -1,9 +1,13 @@
 package com.example.proyectofinal.data
 
 import com.example.proyectofinal.data.services.AuthService
+import com.example.proyectofinal.data.services.CommentService
+import com.example.proyectofinal.data.services.PostService
+import com.example.proyectofinal.data.services.UserService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 object Retrofit {
@@ -27,5 +31,17 @@ object Retrofit {
 
     fun createAuthService() : AuthService{
         return retrofit.create(AuthService::class.java)
+    }
+
+    fun createPostService() : PostService{
+        return retrofit.create(PostService::class.java)
+    }
+
+    fun createCommentService() : CommentService{
+        return retrofit.create(CommentService::class.java)
+    }
+
+    fun createUserService() : UserService{
+        return retrofit.create(UserService::class.java)
     }
 }
