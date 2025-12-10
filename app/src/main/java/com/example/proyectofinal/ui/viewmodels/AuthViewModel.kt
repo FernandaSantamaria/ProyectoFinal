@@ -1,15 +1,20 @@
 package com.example.proyectofinal.ui.viewmodels
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.network.HttpException
 import com.example.proyectofinal.data.RetrofitClient
 import com.example.proyectofinal.domain.dtos.Login
 import com.example.proyectofinal.domain.dtos.Register
 import com.example.proyectofinal.domain.utils.Preferences
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
-class AuthViewModel: ViewModel() {
+class AuthViewModel : ViewModel() {
+    var isLoading by mutableStateOf(false)
 
     fun register(
         name: String,
@@ -31,7 +36,7 @@ class AuthViewModel: ViewModel() {
 
                 val result = service.register(registerBody)
 
-                if (result.user != null && result.token.isNotEmpty()){
+                if (result.user != null && result.token.isNotEmpty()) {
                     Preferences.saveUserId(result.user.id)
                     Preferences.saveIsLogged(true)
                     onResult(true, "Registro exitoso")
@@ -55,6 +60,8 @@ class AuthViewModel: ViewModel() {
     ) {
         viewModelScope.launch {
             try {
+                isLoading = true
+
                 val service = RetrofitClient.createAuthService()
 
                 val loginBody = Login(
@@ -64,7 +71,7 @@ class AuthViewModel: ViewModel() {
 
                 val result = service.login(loginBody)
 
-                if (result.user != null && result.token.isNotEmpty()){
+                if (result.user != null && result.token.isNotEmpty()) {
                     Preferences.saveUserId(result.user.id)
                     Preferences.saveIsLogged(true)
                     onResult(true, "Login exitoso")
@@ -72,8 +79,33 @@ class AuthViewModel: ViewModel() {
                     onResult(false, "Credenciales incorrectas")
                 }
             } catch (e: Exception) {
-                onResult(false, "Error al iniciar sesión")
-                println(e.toString())
+                Log.e("LoginScreen", e.toString())
+
+                if (e is HttpException) {
+                    when (e.code()) {
+                        404 -> {
+                            onResult(false, "Usuario no encontrado")
+                        }
+
+                        401 -> {
+                            onResult(false, "Contraseña incorrecta")
+                        }
+
+                        else -> {
+                            onResult(
+                                false,
+                                "Algo salió mal. Intenta de nuevo más tarde."
+                            )
+                        }
+                    }
+                } else {
+                    onResult(
+                        false,
+                        "Algo salió mal. Intenta de nuevo más tarde."
+                    )
+                }
+            } finally {
+                isLoading = false
             }
         }
     }

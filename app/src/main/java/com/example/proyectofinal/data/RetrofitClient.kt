@@ -18,29 +18,29 @@ object RetrofitClient {
             .build()
     }
 
-    val baseUrl = "http://10.0.2.2:3000/api/"
+    val baseUrl = "http://192.168.3.118:3000/api/"
 
     val retrofit: Retrofit by lazy {
-        retrofit2.Retrofit.Builder()
+        Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    fun createAuthService() : AuthService{
+    fun createAuthService(): AuthService {
         return retrofit.create(AuthService::class.java)
     }
 
-    fun createPostService() : PostService{
+    fun createPostService(): PostService {
         return retrofit.create(PostService::class.java)
     }
 
-    fun createCommentService() : CommentService{
+    fun createCommentService(): CommentService {
         return retrofit.create(CommentService::class.java)
     }
 
-    fun createUserService() : UserService{
+    fun createUserService(): UserService {
         return retrofit.create(UserService::class.java)
     }
 }
