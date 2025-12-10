@@ -4,7 +4,6 @@ package com.example.proyectofinal.ui.screens
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinal.data.model.Comment
-import com.example.proyectofinal.ui.viewmodel.PostViewModel
+import com.example.proyectofinal.ui.viewmodels.PostViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
