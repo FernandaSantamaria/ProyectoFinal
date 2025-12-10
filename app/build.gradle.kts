@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -58,7 +59,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //NAV
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     //COIL
     implementation("io.coil-kt:coil-compose:2.5.0")
@@ -68,8 +70,6 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("androidx.compose.material:material-icons-extended:1.7.5")
-
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
 }

@@ -4,11 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.proyectofinal.ui.screens.HomeScreen
 import com.example.proyectofinal.ui.screens.LoginScreen
 import com.example.proyectofinal.ui.screens.PostDetailScreen
@@ -20,6 +18,7 @@ import com.example.proyectofinal.ui.screens.PostDetailScreenRoute
 import com.example.proyectofinal.ui.screens.ProfileScreenRoute
 import com.example.proyectofinal.ui.screens.RegisterScreenRoute
 import com.example.proyectofinal.ui.theme.ProyectoFinalTheme
+import androidx.navigation.toRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,40 +36,29 @@ fun ProyectoFinalApp() {
 
         NavHost(
             navController = navController,
-            startDestination = LoginScreenRoute.route   // <- String
+            startDestination = LoginScreenRoute
         ) {
-
-            composable(LoginScreenRoute.route){
+            composable<LoginScreenRoute> {
                 LoginScreen(navController = navController)
             }
-            composable(RegisterScreenRoute.route) {
+            composable<RegisterScreenRoute> {
                 RegisterScreen(navController = navController)
             }
-            composable(HomeScreenRoute.route) {
+            composable<HomeScreenRoute> {
                 HomeScreen(navController = navController)
             }
-            composable(
-                route = PostDetailScreenRoute.route,
-                arguments = listOf(
-                    navArgument("postId") { type = NavType.IntType }
-                )
-            ) { backStackEntry ->
-                val postId = backStackEntry.arguments?.getInt("postId") ?: 0
+            composable<PostDetailScreenRoute> { backStack ->
+                val args = backStack.toRoute<PostDetailScreenRoute>()
                 PostDetailScreen(
                     navController = navController,
-                    postId = postId
+                    postId = args.postId
                 )
             }
-            composable(
-                route = ProfileScreenRoute.route,
-                arguments = listOf(
-                    navArgument("userId") { type = NavType.IntType }
-                )
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            composable<ProfileScreenRoute> { backStack ->
+                val args = backStack.toRoute<ProfileScreenRoute>()
                 ProfileScreen(
                     navController = navController,
-                    userId = userId
+                    userId = args.userId
                 )
             }
         }

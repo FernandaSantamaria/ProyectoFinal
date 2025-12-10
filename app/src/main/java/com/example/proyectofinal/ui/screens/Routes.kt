@@ -1,22 +1,19 @@
 package com.example.proyectofinal.ui.screens
 
+import kotlinx.serialization.Serializable
+
 // Si quieres puedes dejar el @Serializable, pero no es necesario
-object LoginScreenRoute {
-    const val route = "login"
-}
+@Serializable
+object LoginScreenRoute;
 
-object RegisterScreenRoute {
-    const val route = "register"
-}
+@Serializable
+object RegisterScreenRoute;
 
-object HomeScreenRoute {
-    const val route = "home"
-}
+@Serializable
+object HomeScreenRoute;
 
-object PostDetailScreenRoute {
-    const val route = "post_detail"
-}
+@Serializable
+data class PostDetailScreenRoute(val postId: Int);
 
-object ProfileScreenRoute {
-    const val route = "profile"
-}
+@Serializable
+data class ProfileScreenRoute(val userId: Int);
