@@ -40,6 +40,7 @@ class AuthViewModel : ViewModel() {
 
                 if (result.user != null && result.token.isNotEmpty()) {
                     Preferences.saveUserId(result.user.id)
+                    Preferences.saveAuthToken(result.token)
                     Preferences.saveIsLogged(true)
                     onResult(true, "Registro exitoso")
                     println(result.toString())
@@ -97,6 +98,7 @@ class AuthViewModel : ViewModel() {
 
                 if (result.user != null && result.token.isNotEmpty()) {
                     Preferences.saveUserId(result.user.id)
+                    Preferences.saveAuthToken(result.token)
                     Preferences.saveIsLogged(true)
                     onResult(true, "Login exitoso")
                 } else {

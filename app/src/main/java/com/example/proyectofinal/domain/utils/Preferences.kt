@@ -19,6 +19,14 @@ object Preferences {
         return settings.getInt("userId", 0)
     }
 
+    fun saveAuthToken(token: String) {
+        settings.edit().putString("authToken", token).apply()
+    }
+
+    fun getAuthToken(): String {
+        return settings.getString("authToken", "")!!
+    }
+
     fun saveIsLogged(isLogged: Boolean) {
         settings.edit().putBoolean("isLogged", isLogged).apply()
     }

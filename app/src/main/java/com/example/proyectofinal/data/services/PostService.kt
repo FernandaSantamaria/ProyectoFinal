@@ -8,6 +8,7 @@ import com.example.proyectofinal.domain.dtos.PostListResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -20,13 +21,22 @@ interface PostService {
     suspend fun getPostById(@Path("id") id: Int): PostDTO
 
     @POST("posts/")
-    suspend fun createPost(@Body body: Map<String, String>): PostDTO
+    suspend fun createPost(
+        @Header("Authorization") authToken: String,
+        @Body body: Map<String, String>
+    ): PostDTO
 
     @POST("posts/{id}/like")
-    suspend fun likePosts(@Path("id") id: Int): MessageResponse
+    suspend fun likePosts(
+        @Header("Authorization") authToken: String,
+        @Path("id") id: Int
+    ): MessageResponse
 
     @DELETE("posts/{id}/like")
-    suspend fun removeLike(@Path("id") id: Int): MessageResponse
+    suspend fun removeLike(
+        @Header("Authorization") authToken: String,
+        @Path("id") id: Int
+    ): MessageResponse
 
     @POST("posts/{id}/comment")
     suspend fun createComment(

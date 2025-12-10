@@ -6,6 +6,7 @@ import com.example.proyectofinal.data.RetrofitClient
 import com.example.proyectofinal.domain.dtos.MessageResponse
 import com.example.proyectofinal.domain.dtos.PostDTO
 import com.example.proyectofinal.domain.dtos.PostListResponse
+import com.example.proyectofinal.domain.utils.Preferences
 import kotlinx.coroutines.launch
 
 class PostViewModel : ViewModel() {
@@ -15,7 +16,7 @@ class PostViewModel : ViewModel() {
                 val service = RetrofitClient.createPostService()
                 val result = service.getPosts()
 
-                if(result.data.isNotEmpty()) {
+                if (result.data.isNotEmpty()) {
                     onResult(true, result)
                 } else {
                     onResult(false, null)
@@ -50,7 +51,6 @@ class PostViewModel : ViewModel() {
 
     fun createPost(
         caption: String,
-        imageUrl: String?,
         onResult: (Boolean, String) -> Unit
     ) {
         viewModelScope.launch {
@@ -58,10 +58,12 @@ class PostViewModel : ViewModel() {
                 val service = RetrofitClient.createPostService()
                 val body = mapOf(
                     "caption" to caption,
-                    "imageUrl" to (imageUrl ?: "")
                 )
 
-                val result = service.createPost(body)
+                val result = service.createPost(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    body
+                )
 
                 if (result.id != 0) {
                     onResult(true, "Post creado")
@@ -82,7 +84,10 @@ class PostViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val service = RetrofitClient.createPostService()
-                val result: MessageResponse = service.likePosts(postId)
+                val result: MessageResponse = service.likePosts(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = postId
+                )
 
                 onResult(true, result.message)
 
@@ -100,7 +105,10 @@ class PostViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val service = RetrofitClient.createPostService()
-                val result: MessageResponse = service.removeLike(postId)
+                val result: MessageResponse = service.removeLike(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = postId
+                )
 
                 onResult(true, result.message)
 
