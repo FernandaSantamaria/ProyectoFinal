@@ -25,14 +25,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.proyectofinal.ui.components.HomeComponents.CreatePostCard
 import com.example.proyectofinal.ui.components.HomeComponents.PostCard
 import com.example.proyectofinal.ui.components.HomeComponents.TopSection
 import com.example.proyectofinal.ui.theme.BackgroundWhite
 import com.example.proyectofinal.ui.theme.ItemPurple
+import com.example.proyectofinal.ui.viewmodels.PostViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavHostController,
+    postViewModel: PostViewModel = viewModel()
+) {
     var postText by remember { mutableStateOf("") }
 
     Scaffold(
