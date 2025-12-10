@@ -118,4 +118,30 @@ class PostViewModel : ViewModel() {
             }
         }
     }
+
+    fun createComment(
+        postId: Int,
+        content: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val service = RetrofitClient.createPostService()
+                val body = mapOf(
+                    "content" to content,
+                )
+
+                service.createComment(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = postId,
+                    body
+                )
+
+                onResult(true, "Post creado")
+            } catch (e: Exception) {
+                println(e)
+                onResult(false, "Error al crear el post")
+            }
+        }
+    }
 }

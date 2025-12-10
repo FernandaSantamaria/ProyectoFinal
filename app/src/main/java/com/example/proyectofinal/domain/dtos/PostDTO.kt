@@ -8,5 +8,6 @@ data class PostDTO(
     val createdAt: Timestamp,
     val updatedAt: Timestamp,
     val User: UserDTO,
-    val Likes: List<UserDTO>
+    val Likes: List<UserDTO>,
+    val Comments: List<CommentDTO>
 )

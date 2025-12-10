@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.proyectofinal.ui.components.ProfileComponents.ActionButtons
 import com.example.proyectofinal.ui.components.ProfileComponents.PhotoGrid
@@ -29,9 +28,7 @@ fun ProfileScreen(
     userId: Int,
     userViewModel: UserViewModel = viewModel()
 ) {
-    Scaffold(
-        bottomBar = { BottomNavBar(selectedIndex = 3) }
-    ) { padding ->
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

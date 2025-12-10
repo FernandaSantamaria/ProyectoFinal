@@ -1,6 +1,5 @@
 package com.example.proyectofinal.data.services
 
-import com.example.proyectofinal.domain.dtos.CommentDTO
 import com.example.proyectofinal.domain.dtos.CommentResponse
 import com.example.proyectofinal.domain.dtos.MessageResponse
 import com.example.proyectofinal.domain.dtos.PostDTO
@@ -40,8 +39,9 @@ interface PostService {
 
     @POST("posts/{id}/comment")
     suspend fun createComment(
+        @Header("Authorization") authToken: String,
         @Path("id") id: Int,
-        @Body comment: CommentDTO
+        @Body comment: Map<String, String>
     ): CommentResponse
 
     @PUT("posts/{id}")

@@ -2,7 +2,6 @@ package com.example.proyectofinal.ui.components.HomeComponents
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -35,37 +33,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.proyectofinal.domain.dtos.PostDTO
+import com.example.proyectofinal.domain.dtos.CommentDTO
 import com.example.proyectofinal.domain.utils.Preferences
-import com.example.proyectofinal.ui.viewmodels.PostViewModel
-import java.sql.Timestamp
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import com.example.proyectofinal.ui.viewmodels.CommentViewModel
 
 
 @Composable
-fun PostCard(post: PostDTO, onClick: () -> Unit) {
-    val viewModel: PostViewModel = viewModel()
+fun CommentCard(comment: CommentDTO) {
+    val viewModel: CommentViewModel = viewModel()
     val context = LocalContext.current
 
     val currentUserId = Preferences.getUserId()
 
     var numberOfLikes by remember {
-        mutableStateOf(post.Likes.size)
+        mutableStateOf(comment.CommentLikes.size)
     }
 
     var hasLikeFromUser by remember {
-        mutableStateOf(post.Likes.any { user -> user.id == currentUserId })
+        mutableStateOf(comment.CommentLikes.any { user -> user.id == currentUserId })
     }
 
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -84,9 +76,9 @@ fun PostCard(post: PostDTO, onClick: () -> Unit) {
                             .clip(CircleShape)
                             .background(Color.Gray)
                     ) {
-                        if (post.User.avatar != null) {
+                        if (comment.User.avatar != null) {
                             AsyncImage(
-                                model = post.User.avatar,
+                                model = comment.User.avatar,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxSize(),
@@ -95,28 +87,16 @@ fun PostCard(post: PostDTO, onClick: () -> Unit) {
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            "@${post.User.username}",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "${post.createdAt.toDateString()}${
-                                if (
-                                    post.createdAt.equals(post.updatedAt)
-                                ) "" else " (editado el ${post.updatedAt.toDateString()})"
-                            }",
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    Text(
+                        "@${comment.User.username}",
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            if (post.caption != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(post.caption)
-            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(comment.content)
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -129,7 +109,7 @@ fun PostCard(post: PostDTO, onClick: () -> Unit) {
                     count = numberOfLikes.toString()
                 ) {
                     if (hasLikeFromUser) {
-                        viewModel.removeLike(post.id) { isSuccess, message ->
+                        viewModel.removeCommentLike(comment.id) { isSuccess, message ->
                             if (isSuccess) {
                                 hasLikeFromUser = false
                                 numberOfLikes -= 1
@@ -142,7 +122,7 @@ fun PostCard(post: PostDTO, onClick: () -> Unit) {
                             }
                         }
                     } else {
-                        viewModel.likePost(post.id) { isSuccess, message ->
+                        viewModel.likeComment(comment.id) { isSuccess, message ->
                             if (isSuccess) {
                                 hasLikeFromUser = true
                                 numberOfLikes += 1
@@ -156,21 +136,7 @@ fun PostCard(post: PostDTO, onClick: () -> Unit) {
                         }
                     }
                 }
-
-                ActionButton(
-                    icon = Icons.Default.ChatBubbleOutline
-                ) {}
             }
         }
     }
-}
-
-fun Timestamp.toDateString(): String {
-    val instant = this.toInstant()
-    val zoneId = ZoneId.systemDefault()
-    val zonedDateTime = instant.atZone(zoneId)
-    val formatter = DateTimeFormatter
-        .ofLocalizedDate(FormatStyle.MEDIUM)
-        .withZone(zoneId)
-    return zonedDateTime.format(formatter)
 }

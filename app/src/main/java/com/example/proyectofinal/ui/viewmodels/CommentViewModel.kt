@@ -3,9 +3,10 @@ package com.example.proyectofinal.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinal.data.RetrofitClient
+import com.example.proyectofinal.domain.utils.Preferences
 import kotlinx.coroutines.launch
 
-class CommentViewModel: ViewModel() {
+class CommentViewModel : ViewModel() {
     fun likeComment(
         commentId: Int,
         onResult: (Boolean, String) -> Unit
@@ -13,7 +14,10 @@ class CommentViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val service = RetrofitClient.createCommentService()
-                val result = service.likeComment(commentId)
+                val result = service.likeComment(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = commentId
+                )
                 // Si llega aquí, la petición salió bien
                 onResult(true, result.message)
             } catch (e: Exception) {
@@ -30,7 +34,10 @@ class CommentViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val service = RetrofitClient.createCommentService()
-                val result = service.removeCommentLike(commentId)
+                val result = service.removeCommentLike(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = commentId
+                )
                 onResult(true, result.message)
             } catch (e: Exception) {
                 onResult(false, "Error al quitar like del comentario")
@@ -48,7 +55,7 @@ class CommentViewModel: ViewModel() {
             try {
                 val service = RetrofitClient.createCommentService()
                 val body = mapOf("content" to content)
-                val result = service.updateComment(commentId, body)
+                service.updateComment(commentId, body)
                 // Si tu CommentResponse tiene message, úsalo; si no, puedes poner uno fijo
                 onResult(true, "Ok")
             } catch (e: Exception) {
@@ -65,7 +72,10 @@ class CommentViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val service = RetrofitClient.createCommentService()
-                val result = service.deleteComment(commentId)
+                val result = service.deleteComment(
+                    authToken = "Bearer " + Preferences.getAuthToken(),
+                    id = commentId
+                )
                 onResult(true, result.message)
             } catch (e: Exception) {
                 onResult(false, "Error al eliminar comentario")
